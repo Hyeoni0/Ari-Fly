@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Touch Fly</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hud" aria-label="game status">
+        <div>
+          <p class="eyebrow">Ari Fly</p>
+          <h1>아리 날다</h1>
+        </div>
+        <div class="stats">
+          <span>점수 <strong id="score">0</strong></span>
+          <span>최고 <strong id="best">0</strong></span>
+        </div>
+      </section>
+
+      <section class="stage-wrap">
+        <canvas id="game" aria-label="touch flying obstacle game"></canvas>
+        <div class="overlay" id="overlay">
+          <p class="state" id="state">준비</p>
+          <p class="hint" id="hint">화면을 누르면 위로 솟고, 손을 떼면 떨어집니다.</p>
+          <button id="startButton" type="button">시작</button>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="controls">
+        <span>Touch / Click: 상승</span>
+        <span>Space: 상승</span>
+        <span>R: 재시작</span>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
