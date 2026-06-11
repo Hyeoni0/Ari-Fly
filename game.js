@@ -54,6 +54,12 @@ const game = {
   particles: [],
 };
 
+function difficultyScale() {
+  if (game.width < 520) return 0.72;
+  if (game.width < 760) return 0.84;
+  return 1;
+}
+
 function resize() {
   const rect = canvas.getBoundingClientRect();
   game.dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -69,7 +75,7 @@ function resetRun() {
   game.time = 0;
   game.lastTime = performance.now();
   game.score = 0;
-  game.speed = 265;
+  game.speed = 265 * difficultyScale();
   game.spawnTimer = 0;
   game.shake = 0;
   game.obstacles = [];
@@ -112,14 +118,16 @@ function setInput(isDown) {
 }
 
 function spawnObstacle() {
+  const scale = difficultyScale();
   const margin = game.height * 0.16;
-  const gap = Math.max(136, game.height * 0.29 - Math.min(game.score, 18) * 3);
+  const gapRatio = scale < 1 ? 0.36 : 0.29;
+  const gap = Math.max(136, game.height * gapRatio - Math.min(game.score, 18) * 3);
   const center = margin + Math.random() * (game.height - margin * 2);
   const top = Math.max(52, center - gap / 2);
   const bottom = Math.min(game.height - 54, center + gap / 2);
   game.obstacles.push({
     x: game.width + 36,
-    w: Math.max(54, game.width * 0.07),
+    w: Math.max(48, game.width * (scale < 1 ? 0.06 : 0.07)),
     top,
     bottom,
     passed: false,
@@ -131,11 +139,12 @@ function update(dt) {
   if (game.state !== "playing") return;
 
   game.time += dt;
-  game.speed = 265 + Math.min(120, game.score * 4);
+  const scale = difficultyScale();
+  game.speed = (265 + Math.min(120, game.score * 4)) * scale;
   game.spawnTimer -= dt;
   if (game.spawnTimer <= 0) {
     spawnObstacle();
-    game.spawnTimer = Math.max(0.95, 1.55 - game.score * 0.018);
+    game.spawnTimer = Math.max(0.95, 1.55 - game.score * 0.018) / scale;
   }
 
   const gravity = 1120;
