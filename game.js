@@ -12,6 +12,8 @@ let best = Number(localStorage.getItem(storeKey) || 0);
 bestEl.textContent = best;
 
 const spriteFramePaths = [
+  "assets/ari.svg",
+  "assets/ari.png",
   "assets/iren-source.png",
   "assets/iren-idle.png",
   "assets/iren-flap-up.png",
@@ -285,13 +287,13 @@ function drawBird() {
 function drawBirdSprite() {
   const b = game.bird;
   const loadedFrames = spriteFrames.filter((frame) => frame.loaded);
-  const hasSingleSource = spriteFrames[0].loaded;
+  const hasSingleSource = spriteFrames[0].loaded || spriteFrames[1].loaded || spriteFrames[2].loaded;
   const flapSpeed = game.inputDown ? 18 : 9;
   const phase = Math.floor(game.time * flapSpeed) % 3;
   const frame = hasSingleSource
-    ? spriteFrames[0].image
+    ? (spriteFrames[0].loaded ? spriteFrames[0].image : spriteFrames[1].loaded ? spriteFrames[1].image : spriteFrames[2].image)
     : loadedFrames[Math.floor(game.time * flapSpeed) % loadedFrames.length].image;
-  const size = b.radius * 3.85;
+  const size = b.radius * 3.7;
   const squash = hasSingleSource ? [1, 0.92, 1.08][phase] : 1;
   const stretch = hasSingleSource ? [1, 1.08, 0.92][phase] : 1;
   const bob = hasSingleSource ? [0, -b.radius * 0.12, b.radius * 0.1][phase] : 0;
@@ -308,76 +310,104 @@ function drawBirdFallback() {
   const b = game.bird;
   ctx.save();
   ctx.translate(b.x, b.y);
-  ctx.rotate(b.tilt * 0.38);
+  ctx.rotate(b.tilt * 0.35);
 
   const r = b.radius;
-  const flap = Math.sin(game.time * (game.inputDown ? 24 : 12)) * (game.inputDown ? 0.26 : 0.12);
+  const flap = Math.sin(game.time * (game.inputDown ? 26 : 13)) * (game.inputDown ? 0.22 : 0.1);
 
-  ctx.fillStyle = "rgba(52, 79, 91, 0.16)";
+  ctx.fillStyle = "rgba(35, 34, 42, 0.16)";
   ctx.beginPath();
-  ctx.ellipse(2, r * 0.92, r * 1.08, r * 0.18, 0, 0, Math.PI * 2);
+  ctx.ellipse(3, r * 0.96, r * 1.15, r * 0.2, 0, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
-  ctx.fillStyle = "#ffe86a";
+  ctx.fillStyle = "#ffda56";
+  ctx.strokeStyle = "#191820";
+  ctx.lineWidth = Math.max(4, r * 0.16);
+
   ctx.save();
-  ctx.translate(-r * 0.82, r * 0.28);
-  ctx.rotate(-0.3 - flap * 0.62);
+  ctx.translate(-r * 0.95, r * 0.05);
+  ctx.rotate(-0.34 - flap * 0.55);
   ctx.beginPath();
-  ctx.ellipse(0, 0, r * 0.15, r * 0.42, -0.55, 0, Math.PI * 2);
+  ctx.moveTo(r * 0.12, -r * 0.48);
+  ctx.quadraticCurveTo(-r * 0.54, -r * 0.52, -r * 0.76, r * 0.02);
+  ctx.quadraticCurveTo(-r * 0.66, r * 0.52, r * 0.22, r * 0.42);
+  ctx.quadraticCurveTo(r * 0.02, r * 0.1, r * 0.12, -r * 0.48);
+  ctx.closePath();
   ctx.fill();
+  ctx.stroke();
   ctx.restore();
 
   ctx.save();
-  ctx.translate(r * 0.82, r * 0.28);
-  ctx.rotate(0.3 + flap * 0.62);
+  ctx.translate(r * 0.95, r * 0.05);
+  ctx.rotate(0.34 + flap * 0.55);
   ctx.beginPath();
-  ctx.ellipse(0, 0, r * 0.15, r * 0.42, 0.55, 0, Math.PI * 2);
+  ctx.moveTo(-r * 0.12, -r * 0.48);
+  ctx.quadraticCurveTo(r * 0.54, -r * 0.52, r * 0.76, r * 0.02);
+  ctx.quadraticCurveTo(r * 0.66, r * 0.52, -r * 0.22, r * 0.42);
+  ctx.quadraticCurveTo(-r * 0.02, r * 0.1, -r * 0.12, -r * 0.48);
+  ctx.closePath();
   ctx.fill();
+  ctx.stroke();
   ctx.restore();
 
-  ctx.fillStyle = "#ffe86a";
+  ctx.fillStyle = "#ffda56";
+  ctx.strokeStyle = "#191820";
+  ctx.lineWidth = Math.max(4, r * 0.16);
   ctx.beginPath();
-  ctx.moveTo(-r * 0.1, -r * 1.08);
-  ctx.bezierCurveTo(-r * 0.68, -r * 0.98, -r * 1.08, -r * 0.34, -r * 1.02, r * 0.34);
-  ctx.bezierCurveTo(-r * 0.94, r * 0.96, -r * 0.42, r * 1.24, r * 0.16, r * 1.14);
-  ctx.bezierCurveTo(r * 0.84, r * 1.02, r * 1.08, r * 0.46, r * 1.0, -r * 0.1);
-  ctx.bezierCurveTo(r * 0.9, -r * 0.76, r * 0.46, -r * 1.08, -r * 0.1, -r * 1.08);
+  ctx.moveTo(-r * 0.72, -r * 0.44);
+  ctx.bezierCurveTo(-r * 0.68, -r * 0.96, -r * 0.3, -r * 1.12, -r * 0.05, -r * 0.96);
+  ctx.bezierCurveTo(r * 0.26, -r * 1.12, r * 0.66, -r * 0.88, r * 0.72, -r * 0.36);
+  ctx.bezierCurveTo(r * 1.08, -r * 0.22, r * 1.18, r * 0.34, r * 0.94, r * 0.76);
+  ctx.bezierCurveTo(r * 0.66, r * 1.22, -r * 0.52, r * 1.26, -r * 0.84, r * 0.82);
+  ctx.bezierCurveTo(-r * 1.14, r * 0.4, -r * 1.06, -r * 0.2, -r * 0.72, -r * 0.44);
   ctx.closePath();
   ctx.fill();
+  ctx.stroke();
 
-  ctx.fillStyle = "#ffe86a";
+  ctx.fillStyle = "#ffda56";
+  ctx.strokeStyle = "#191820";
+  ctx.lineWidth = Math.max(4, r * 0.15);
   ctx.beginPath();
-  ctx.moveTo(-r * 0.18, -r * 1.02);
-  ctx.lineTo(r * 0.02, -r * 1.34);
-  ctx.lineTo(r * 0.04, -r * 1.02);
-  ctx.lineTo(r * 0.34, -r * 1.28);
-  ctx.lineTo(r * 0.22, -r * 0.92);
-  ctx.lineTo(r * 0.54, -r * 1.1);
-  ctx.lineTo(r * 0.34, -r * 0.76);
+  ctx.moveTo(-r * 0.16, -r * 0.98);
+  ctx.quadraticCurveTo(-r * 0.02, -r * 1.32, r * 0.28, -r * 1.05);
+  ctx.quadraticCurveTo(r * 0.52, -r * 1.02, r * 0.48, -r * 0.72);
+  ctx.quadraticCurveTo(r * 0.16, -r * 0.72, -r * 0.16, -r * 0.98);
   ctx.closePath();
   ctx.fill();
+  ctx.stroke();
 
-  ctx.fillStyle = "#050505";
+  ctx.fillStyle = "#191820";
   ctx.beginPath();
-  ctx.arc(-r * 0.34, -r * 0.2, r * 0.1, 0, Math.PI * 2);
+  ctx.arc(-r * 0.35, -r * 0.18, r * 0.1, 0, Math.PI * 2);
   ctx.fill();
   ctx.beginPath();
-  ctx.arc(r * 0.38, -r * 0.2, r * 0.1, 0, Math.PI * 2);
+  ctx.arc(r * 0.43, -r * 0.15, r * 0.1, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.strokeStyle = "#050505";
-  ctx.lineWidth = Math.max(2, r * 0.1);
-  ctx.fillStyle = "#ffe86a";
+  ctx.strokeStyle = "#191820";
+  ctx.lineWidth = Math.max(3, r * 0.11);
+  ctx.fillStyle = "#ff9b5a";
   ctx.beginPath();
-  ctx.moveTo(0, -r * 0.02);
-  ctx.lineTo(r * 0.16, r * 0.14);
-  ctx.lineTo(0, r * 0.3);
-  ctx.lineTo(-r * 0.16, r * 0.14);
-  ctx.closePath();
+  ctx.ellipse(r * 0.08, r * 0.05, r * 0.28, r * 0.18, 0.02, 0, Math.PI * 2);
   ctx.fill();
+  ctx.stroke();
+
+  ctx.strokeStyle = "#191820";
+  ctx.lineWidth = Math.max(3, r * 0.13);
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.48, r * 0.52);
+  ctx.lineTo(-r * 0.66, r * 0.76);
+  ctx.lineTo(-r * 0.46, r * 0.66);
+  ctx.moveTo(-r * 0.48, r * 0.52);
+  ctx.lineTo(-r * 0.28, r * 0.76);
+  ctx.moveTo(r * 0.42, r * 0.52);
+  ctx.lineTo(r * 0.24, r * 0.76);
+  ctx.lineTo(r * 0.44, r * 0.66);
+  ctx.moveTo(r * 0.42, r * 0.52);
+  ctx.lineTo(r * 0.62, r * 0.76);
   ctx.stroke();
 
   ctx.restore();
